@@ -1,0 +1,551 @@
+<!--
+  Created by IntelliJ IDEA.
+  User: zouyao
+  Date: 2017/3/6
+  Time: 11:09
+  To change this template use File | Settings | File Templates.
+-->
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<script src="jsp/scenicjsp/js/scenic.js"></script>
+<%--景区--%>
+<div ng-controller="sceniccontroller">
+    <div class="col-xs-10" style="background-color: #f7f7f7;" id="">
+        <caption>
+            <nav class="navbar navbar-default" role="navigation">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand">景区列表</a>
+                    </div>
+                    <div>
+                        <form class="navbar-form navbar-right" role="search"  onsubmit="return ;">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default"><span ng-bind="scenicSortConst"></span></button>
+                                <button type="button" class="btn btn-default dropdown-toggle"
+                                        data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">切换下拉菜单</span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a style="cursor: pointer;" ng-click="scenicSortConstFunc($event)">全部</a></li>
+                                    <%--<li class="divider"></li>
+                                    <li><a style="cursor: pointer;" ng-click="scenicSortConstFunc($event)">按价格从低到高</a></li>
+                                    <li><a style="cursor: pointer;" ng-click="scenicSortConstFunc($event)">按价格从高到低</a></li>--%>
+                                    <%--<li class="divider"></li>
+                                    <li><a style="cursor: pointer;" ng-click="scenicSortConstFunc($event)">按时间由近及远</a></li>
+                                    <li><a style="cursor: pointer;" ng-click="scenicSortConstFunc($event)">按时间由远及近</a></li>--%>
+                                    <li class="divider"></li>
+                                    <li><a style="cursor: pointer;" ng-click="scenicSortConstFunc($event)" >按评分从低到高</a></li>
+                                    <li><a style="cursor: pointer;" ng-click="scenicSortConstFunc($event)">按评分从高到低</a></li>
+                                </ul>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="请输入景区名" ng-model="blurScenicName">
+                            </div>
+                            <button type="button" class="btn btn-default" ng-click="getScenicPageList()">
+                                <span class="glyphicon glyphicon-search"></span>&nbsp;<span>搜索</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </nav>
+        </caption>
+        <%--景区列表表格--%>
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr><th>景区名称</th><th>描述</th><th>门票图片</th><th>旅行社团</th><th>票价(元)</th><th>负责人</th><th>成立时间</th><th>评分</th><th>操作</th></tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in scenicList">
+                <td style="vertical-align:middle" ng-bind="item.scenicName"></td>
+                <td style="vertical-align:middle" ng-bind="item.scenicDescription"></td>
+                <td style="vertical-align:middle">
+                    <div><img width="100px" height="100px" ng-src="{{item.ticket.picture}}" alt="no img"></div>
+                    <%--<h5><span ng-bind="item.ticket.description"></span></h5>--%>
+                </td>
+                <td><a target="_blank" href="http://www.baidu.com"><img width="100px" height="100px" src="jsp/common/imgs/318-0127.jpg" alt=""></a></td>
+                <td style="vertical-align:middle" ng-bind="item.ticket.unitPrice"></td>
+                <td style="vertical-align:middle" ng-bind="item.user.username"></td>
+                <td style="vertical-align:middle" ng-bind="item.createTime"></td>
+                <td style="vertical-align:middle" ng-bind="item.praise"></td>
+                <td style="vertical-align:middle"><button ng-click="actionOnScenic(item,constRef[0][0])" type="button" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-tasks"></span>&nbsp;<span ng-bind="constRef[0][0]"></span></button>
+                    <button ng-click="actionOnScenic(item,constRef[0][1])" type="button" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-exclamation-sign"></span>&nbsp;<span ng-bind="constRef[0][1]"></span></button>
+                    <button ng-click="actionOnScenic(item,constRef[0][2])" type="button" class="btn btn-warning btn-sm"><span class="glyphicon glyphicon-shopping-cart"></span>&nbsp;<span ng-bind="constRef[0][2]"></span></button>
+                    <button ng-if="idOfLoger == 8" ng-click="actionOnScenic(item,constRef[0][3])" type="button" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-edit"></span>&nbsp;<span ng-bind="constRef[0][3]"></span></button>
+                    <button ng-if="idOfLoger == 8"  ng-click="actionOnScenic(item,constRef[0][4])" type="button" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-remove"></span>&nbsp;<span ng-bind="constRef[0][4]"></span></button></td>
+            </tr>
+            </tbody>
+        </table>
+        <%--<div style="width:930px;min-width: 930px;">--%>
+        <%--goods001--%>
+        <%--<div ng-show="goodsList.length >= 1" style="float:left;height: 350px;">
+            <img style="margin-right: 30px;" width="200px" height="200px" ng-src="{{goodsList[0].picture}}" alt="no img"/>
+            <div>
+                <h6>商品名称：<span ng-bind="goodsList[0].name"></span></h6>
+                <h6>单价(元)：<span ng-bind="goodsList[0].unitPrice"></span></h6>
+                <h6>销量：<span ng-bind="goodsList[0].salesCount"></span></h6>
+                <h6>发布时间：<span ng-bind="goodsList[0].createTime"></span></h6>
+                <div>
+                    <button class="btn btn-info" ng-click="infoGoodsModal(goodsList[0])">查看详情</button>
+                    <button class="btn btn-warning" ng-click="addToCartModal(goodsList[0])">加入购物车</button>
+                </div>
+            </div>
+        </div>
+        &lt;%&ndash;goods002&ndash;%&gt;
+        <div ng-show="goodsList.length >= 2" style="float:left;height: 350px;">
+            <img style="margin-right: 30px;" width="200px" height="200px" ng-src="{{goodsList[1].picture}}" alt="no img"/>
+            <div>
+                <h6>商品名称：<span ng-bind="goodsList[1].name"></span></h6>
+                <h6>单价(元)：<span ng-bind="goodsList[1].unitPrice"></span></h6>
+                <h6>销量：<span ng-bind="goodsList[1].salesCount"></span></h6>
+                <h6>发布时间：<span ng-bind="goodsList[1].createTime"></span></h6>
+                <div>
+                    <button class="btn btn-info" ng-click="infoGoodsModal(goodsList[1])">查看详情</button>
+                    <button class="btn btn-warning" ng-click="addToCartModal(goodsList[1])">加入购物车</button>
+                </div>
+            </div>
+        </div>
+        &lt;%&ndash;goods003&ndash;%&gt;
+        <div ng-show="goodsList.length >= 3" style="float:left;height: 350px;">
+            <img style="margin-right: 30px;" width="200px" height="200px" ng-src="{{goodsList[2].picture}}" alt="no img"/>
+            <div>
+                <h6>商品名称：<span ng-bind="goodsList[2].name"></span></h6>
+                <h6>单价(元)：<span ng-bind="goodsList[2].unitPrice"></span></h6>
+                <h6>销量：<span ng-bind="goodsList[2].salesCount"></span></h6>
+                <h6>发布时间：<span ng-bind="goodsList[2].createTime"></span></h6>
+                <div>
+                    <button class="btn btn-info" ng-click="infoGoodsModal(goodsList[2])">查看详情</button>
+                    <button class="btn btn-warning" ng-click="addToCartModal(goodsList[2])">加入购物车</button>
+                </div>
+            </div>
+        </div>
+        &lt;%&ndash;goods004&ndash;%&gt;
+        <div ng-show="goodsList.length >= 4" style="float:left;height: 350px;">
+            <img style="margin-right: 30px;" width="200px" height="200px" ng-src="{{goodsList[3].picture}}" alt="no img"/>
+            <div>
+                <h6>商品名称：<span ng-bind="goodsList[3].name"></span></h6>
+                <h6>单价(元)：<span ng-bind="goodsList[3].unitPrice"></span></h6>
+                <h6>销量：<span ng-bind="goodsList[3].salesCount"></span></h6>
+                <h6>发布时间：<span ng-bind="goodsList[3].createTime"></span></h6>
+                <div>
+                    <button class="btn btn-info" ng-click="infoGoodsModal(goodsList[3])">查看详情</button>
+                    <button class="btn btn-warning" ng-click="addToCartModal(goodsList[3])">加入购物车</button>
+                </div>
+            </div>
+        </div>
+        &lt;%&ndash;goods005&ndash;%&gt;
+        <div ng-show="goodsList.length >= 5" style="float:left;height: 350px;">
+            <img style="margin-right: 30px;" width="200px" height="200px" ng-src="{{goodsList[4].picture}}" alt="no img"/>
+            <div>
+                <h6>商品名称：<span ng-bind="goodsList[4].name"></span></h6>
+                <h6>单价(元)：<span ng-bind="goodsList[4].unitPrice"></span></h6>
+                <h6>销量：<span ng-bind="goodsList[4].salesCount"></span></h6>
+                <h6>发布时间：<span ng-bind="goodsList[4].createTime"></span></h6>
+                <div>
+                    <button class="btn btn-info" ng-click="infoGoodsModal(goodsList[4])">查看详情</button>
+                    <button class="btn btn-warning" ng-click="addToCartModal(goodsList[4])">加入购物车</button>
+                </div>
+            </div>
+        </div>
+        &lt;%&ndash;goods006&ndash;%&gt;
+        <div ng-show="goodsList.length >= 6" style="float:left;height: 350px;">
+            <img style="margin-right: 30px;" width="200px" height="200px" ng-src="{{goodsList[5].picture}}" alt="no img"/>
+            <div>
+                <h6>商品名称：<span ng-bind="goodsList[5].name"></span></h6>
+                <h6>单价(元)：<span ng-bind="goodsList[5].unitPrice"></span></h6>
+                <h6>销量：<span ng-bind="goodsList[5].salesCount"></span></h6>
+                <h6>发布时间：<span ng-bind="goodsList[5].createTime"></span></h6>
+                <div>
+                    <button class="btn btn-info" ng-click="infoGoodsModal(goodsList[5])">查看详情</button>
+                    <button class="btn btn-warning" ng-click="addToCartModal(goodsList[5])">加入购物车</button>
+                </div>
+            </div>
+        </div>
+        &lt;%&ndash;goods007&ndash;%&gt;
+        <div ng-show="goodsList.length >= 7" style="float:left;height: 350px;">
+            <img style="margin-right: 30px;" width="200px" height="200px" ng-src="{{goodsList[6].picture}}" alt="no img"/>
+            <div>
+                <h6>商品名称：<span ng-bind="goodsList[6].name"></span></h6>
+                <h6>单价(元)：<span ng-bind="goodsList[6].unitPrice"></span></h6>
+                <h6>销量：<span ng-bind="goodsList[6].salesCount"></span></h6>
+                <h6>发布时间：<span ng-bind="goodsList[6].createTime"></span></h6>
+                <div>
+                    <button class="btn btn-info" ng-click="infoGoodsModal(goodsList[6])">查看详情</button>
+                    <button class="btn btn-warning" ng-click="addToCartModal(goodsList[6])">加入购物车</button>
+                </div>
+            </div>
+        </div>
+        &lt;%&ndash;goods008&ndash;%&gt;
+        <div ng-show="goodsList.length >= 8" style="float:left;height: 350px;">
+            <img style="margin-right: 30px;" width="200px" height="200px" ng-src="{{goodsList[7].picture}}" alt="no img"/>
+            <div>
+                <h6>商品名称：<span ng-bind="goodsList[7].name"></span></h6>
+                <h6>单价(元)：<span ng-bind="goodsList[7].unitPrice"></span></h6>
+                <h6>销量：<span ng-bind="goodsList[7].salesCount"></span></h6>
+                <h6>发布时间：<span ng-bind="goodsList[7].createTime"></span></h6>
+                <div>
+                    <button class="btn btn-info" ng-click="infoGoodsModal(goodsList[7])">查看详情</button>
+                    <button class="btn btn-warning" ng-click="addToCartModal(goodsList[7])">加入购物车</button>
+                </div>
+            </div>
+        </div>--%>
+        <%--goods009--%>
+        <%--<div ng-show="test[0][0] == '登录'" style="float:left;height: 350px;">
+            <img style="margin-right: 30px;" width="200px" height="200px" src="" alt="no img"/>
+            <div>
+                <h6>商品名称：<span>hello</span></h6><h6>商品描述：<span>hoolo</span></h6><h6>发布时间：<span>2019</span></h6>
+                <div>
+                    <button class="btn btn-info">查看详情</button>
+                    <button class="btn btn-warning">加入购物车</button>
+                </div>
+            </div>
+        </div>--%>
+        <%--</div>--%>
+        <%--<div style="clear:both;"></div>--%>
+        <div style="margin-bottom: 20px;"><!--分页bar ng-if则不能给button设置disabled因为ng-if不满足条件不会生成相应dom元素-->
+            <span ng-show="true">
+            <input type="button" id="btnid-prevpage-scenic" ng-click="makePagingList(prevPage)" class="btn btn-default" value={{prevPage}} />&nbsp;
+            <input type="text" disabled style="text-align:center;width:50px;" ng-model="currentPage" />&nbsp;
+            <input type="button" id="btnid-nextpage-scenic" ng-click="makePagingList(nextPage)"  class="btn btn-default" value="{{nextPage}}" />&nbsp;
+            <span>共&nbsp;</span>
+            <input type="text" readonly="readonly" style="text-align:center;width:50px;border:none;" ng-model="totalPage" />
+            <span>&nbsp;页</span>
+        </span>
+        </div>
+    </div>
+
+    <%--景区模态框部分--%>
+    <!-- 查看景区详情  模态弹出框 -->
+    <div class="modal fade" id="modalid-scenicInfo">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <!--  >模态弹出窗标题<  -->
+                    <h4 class="modal-title">景区详情</h4>
+                </div>
+                <div class="modal-body">
+                    <!--  >模态弹出窗主体内容<  -->
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">景区名称</label>
+                            <div class="col-sm-9">
+                                <input type="text" disabled class="form-control" ng-model="scenicInfoTemp.scenicName">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">描述</label>
+                            <div class="col-sm-9">
+                                <input type="text" disabled class="form-control" ng-model="scenicInfoTemp.scenicDescription">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">负责人</label>
+                            <div class="col-sm-9">
+                                <input type="text" disabled class="form-control" ng-model="scenicInfoTemp.user.username">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">成立时间</label>
+                            <div class="col-sm-9">
+                                <input type="text" disabled class="form-control" ng-model="scenicInfoTemp.createTime">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">评分</label>
+                            <div class="col-sm-9">
+                                <input type="text" disabled class="form-control" ng-model="scenicInfoTemp.praise">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">门票信息</label>
+                            <div class="col-sm-9">
+                                <label class="control-label">门票图片</label>
+                                <img width="100px"  height="100px" ng-src="{{scenicInfoTemp.ticket.picture}}" alt="">
+                                <br>
+                                <label class="control-label">门票描述</label>
+                                <input type="text" disabled class="form-control" ng-model="scenicInfoTemp.ticket.description">
+                                <br>
+                                <label class="control-label">门票价格(元)</label>
+                                <input type="text" disabled class="form-control" ng-model="scenicInfoTemp.ticket.unitPrice">
+                                <br>
+                                <label class="control-label">门票销量</label>
+                                <input type="text" disabled class="form-control" ng-model="scenicInfoTemp.ticket.salesCount">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">确定</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <!-- 提示信息 模态弹出框-->
+    <div class="modal fade" id="modalid-toastInfo-se">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">提示信息</h4>
+                </div>
+                <div class="modal-body">
+                    <p><span ng-bind="justForModalInfomation"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">确定</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <!-- 删除确认 模态弹出框-->
+    <div class="modal fade" id="modalid-delconf-se">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">提示信息</h4>
+                </div>
+                <div class="modal-body">
+                    <p><span>是否确认删除?</span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" ng-click="deleteOneScenic(delScenicInfoTemp)" class="btn btn-success" data-dismiss="modal">确定</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <!-- 编辑景区  模态弹出框 -->
+    <div class="modal fade" id="modalid-editScenic">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <!--  >模态弹出窗标题<  -->
+                    <h4 class="modal-title">编辑景区</h4>
+                </div>
+                <div class="modal-body">
+                    <!--  >模态弹出窗主体内容<  -->
+                    <div style="margin-bottom: 20px;">
+                        <%--<form role="form">--%>
+                        <div class="panel panel-info" style="width: 100%">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">基本信息</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group" style="width: 100%">
+                                    <label >景区名称：</label>
+                                    <input type="text" class="form-control" ng-model="editOneScenicTemp[0].scenicName"  placeholder="请输入景区名称">
+                                </div>
+                                <div class="form-group" style="width: 100%">
+                                    <label >景区描述</label>
+                                    <textarea class="form-control" rows="6" cols="20"
+                                              ng-model="editOneScenicTemp[0].scenicDescription" placeholder="请输入景区描述"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-success" style="width: 100%">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">门票信息</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group" style="width: 100%">
+                                    <form id= "uploadForm-se">
+                                        <label>上传门票图片： <input class="form-control" onchange="showPreview_se(this)" type="file" name="file"/></label>
+                                        <input style="margin-top: -9px;" type="button" class="btn btn-success" value="上传" ng-click="doUpload()" />
+                                    </form>
+                                </div>
+                                <div class="form-group" style="width: 100%" ng-show="ifshowpic">
+                                    <label >图片预览：</label>
+                                    <img width="300px" title="<%= request.getSession().getServletContext().getRealPath("/")%>" id="imgid-picPreview-se" height="300px" src="" alt="no img">
+                                </div>
+                                <div class="form-group" style="width: 100%">
+                                    <label >门票名称：</label>
+                                    <input type="text" class="form-control" ng-model="editOneScenicTemp[0].ticket.ticketName"  placeholder="请输入门票名称">
+                                </div>
+                                <div class="form-group" style="width: 100%">
+                                    <label >门票单价(元)：</label>
+                                    <input type="text" class="form-control" ng-model="editOneScenicTemp[0].ticket.unitPrice"  placeholder="请输入门票单价(元)">
+                                </div>
+                                <div class="form-group" style="width: 100%">
+                                    <label >门票描述</label>
+                                    <textarea class="form-control" rows="6" cols="20"
+                                              ng-model="editOneScenicTemp[0].ticket.description" placeholder="请输入门票描述"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-warning" style="width: 100%">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">景区负责人</h3>
+                            </div>
+                            <div class="panel-body">
+                                <%--用户列表表格--%>
+                                <table class="table table-hover table-striped">
+                                    <thead>
+                                    <tr><th>用户名</th><th>电话</th><th>邮箱</th><th>状态</th><th>注册时间</th><th>选择</th></tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="item in userList">
+                                        <td ng-bind="item.username"></td>
+                                        <td ng-bind="item.tel"></td>
+                                        <td ng-bind="item.email"></td>
+                                        <td ng-bind="item.isDelete"></td>
+                                        <td ng-bind="item.createTime"></td>
+                                        <td>
+                                            <%--<label style="margin-top: -25px;" class="checkbox-inline"><input type="checkbox" style="cursor:pointer;" ng-click="userCheckBoxs($event,item)"></label>--%>
+                                            <button ng-disabled="item.id == 8"
+                                                    class="btn btn-success" ng-click="chooseUserOK(item)">选择</button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div >
+                                    <span>曾经该景区负责人为：&nbsp;</span>
+                                    <input data-toggle="tooltip" ng-title="'用户名：'item" class="btn btn-default" readonly ng-model="editOneScenicTemp[0].user.username">
+                                    <hr>
+                                    <span>现在为该景区选择负责人为：&nbsp;</span>
+                                    <input data-toggle="tooltip" ng-title="'用户名：'item" class="btn btn-default" readonly ng-model="editScenicUser.username">
+                                </div>
+                            </div>
+                        </div>
+
+                        <%--<div class="checkbox">
+                            <label>
+                                <input type="checkbox"> <span ng-click="tradeProtocol()">已阅读用户交易协议</span>
+                            </label>
+                        </div>--%>
+                        <%--<button type="submit" class="btn btn-success" ng-click="addOneScenic()">提交</button>
+                        <button type="submit" class="btn btn-default">取消</button>--%>
+                        <%--</form>--%>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" ng-click="editOneScenic()" data-dismiss="modal">提交</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <!-- 加入购物车(门票预定)  模态弹出框 -->
+    <div class="modal fade" id="modalid-addToCart-se">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <!--  >模态弹出窗标题<  -->
+                    <h4 class="modal-title">门票预定</h4>
+                </div>
+                <div class="modal-body">
+                    <!--  >模态弹出窗主体内容<  -->
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-2 col-sm-offset-2 control-label">景区名称</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" name="username" ng-model="addToCartTemp.scenicName" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-sm-offset-2 control-label">门票名称</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" name="username" ng-model="addToCartTemp.ticket.ticketName" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-sm-offset-2 control-label">单价(元)</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" name="email" ng-model="addToCartTemp.ticket.unitPrice" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-sm-offset-2 control-label">购买数量</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" name="email" ng-model="addToCart_goodsNums" >
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" ng-click="addToCart()" data-dismiss="modal">确定</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <!-- 查看评价  模态弹出框 -->
+    <div class="modal fade" id="modalid-comment-se">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <!--  >模态弹出窗标题<  -->
+                    <h4 class="modal-title">查看评价</h4>
+                </div>
+                <div class="modal-body" style="height: 600px;max-height: 1000px;overflow-y: scroll;">
+                    <!--  >模态弹出窗主体内容<  -->
+                    <div ng-if="commentsList.length <= 0">
+                        <div class="panel panel-warning" style="width: 100%">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">提示信息</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group" style="width: 100%">
+                                    <h3>暂时没有任何评价</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 20px;" ng-repeat="item in commentsList">
+                        <%--<form role="form">--%>
+                        <div class="panel panel-info" style="width: 100%">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">评论详情</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group" style="width: 100%">
+                                    <label >景区名称：</label>
+                                    <span style="" ng-bind="item.scenic.scenicName" class="label label-primary"></span>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <label >评论人：</label>
+                                    <span ng-bind="item.user.username" class="label label-success"></span>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <label >评论时间：</label>
+                                    <span ng-bind="item.createTime" class="label label-danger"></span>
+                                </div>
+                                <div class="form-group" style="width: 100%">
+                                    <label >评论内容：</label>
+                                    <textarea readonly class="form-control" rows="6" cols="20"
+                                              ng-model="item.text"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <%--<div class="checkbox">
+                            <label>
+                                <input type="checkbox"> <span ng-click="tradeProtocol()">已阅读用户交易协议</span>
+                            </label>
+                        </div>--%>
+                        <%--<button type="submit" class="btn btn-success" ng-click="addOneScenic()">提交</button>
+                        <button type="submit" class="btn btn-default">取消</button>--%>
+                        <%--</form>--%>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <%--<button type="button" class="btn btn-success" ng-click="" data-dismiss="modal">提交</button>--%>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+
+</div>
+
+

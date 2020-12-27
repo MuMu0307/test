@@ -1,0 +1,171 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: zouyao
+  Date: 2017/3/6
+  Time: 11:10
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<script src="jsp/scenicjsp/js/addScenic.js"></script>
+<%--管理员新增景区--%>
+<div class="col-xs-10" style="background-color: #f7f7f7;" id="divid-publishgoods" ng-controller="addSceniccontroller">
+    <caption>
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand">新增景区</a>
+                </div>
+                <div>
+                    <form class="navbar-form navbar-right" role="search"  onsubmit="return ;">
+                        <!--<div class="form-group">
+                            <input type="text" class="form-control" placeholder="请输入角色名" ng-model="searchRoleName">
+                        </div>
+                        <button type="button" class="btn btn-default" ng-click="actionOnRole(this,constRef[2][3])">
+                            <span class="glyphicon glyphicon-search"></span>&nbsp;<span ng-bind="constRef[2][3]"></span>
+                        </button>
+                        <button type="button" class="btn btn-default" ng-click="actionOnRole(this,constRef[2][2])">
+                            <span class="glyphicon glyphicon-plus"></span>&nbsp;<span ng-bind="constRef[2][2]"></span>
+                        </button>-->
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </caption>
+    <div style="margin-bottom: 20px;">
+        <%--<form role="form">--%>
+        <div class="panel panel-info" style="width: 80%">
+            <div class="panel-heading">
+                <h3 class="panel-title">基本信息</h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group" style="width: 80%">
+                    <label >景区名称：</label>
+                    <input type="text" class="form-control" ng-model="addScenicName"  placeholder="请输入景区名称">
+                </div>
+                <div class="form-group" style="width: 80%">
+                    <label >景区描述</label>
+                        <textarea class="form-control" rows="6" cols="20"
+                                  ng-model="addScenicDescription" placeholder="请输入景区描述"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-success" style="width: 80%">
+            <div class="panel-heading">
+                <h3 class="panel-title">门票信息</h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group" style="width: 80%">
+                    <form id= "uploadForm">
+                        <label>上传门票图片： <input class="form-control" onchange="showPreview(this)" type="file" name="file"/></label>
+                        <input style="margin-top: -9px;" type="button" class="btn btn-success" value="上传" ng-click="doUpload()" />
+                    </form>
+                </div>
+                <div class="form-group" style="width: 80%" ng-show="ifshowpic">
+                    <label >图片预览：</label>
+                    <img width="300px" title="<%= request.getSession().getServletContext().getRealPath("/")%>" id="imgid-picPreview" height="300px" src="" alt="no img">
+                </div>
+                <div class="form-group" style="width: 80%">
+                    <label >门票名称：</label>
+                    <input type="text" class="form-control" ng-model="addTicketName"  placeholder="请输入门票名称">
+                </div>
+                <div class="form-group" style="width: 80%">
+                    <label >门票单价(元)：</label>
+                    <input type="text" class="form-control" ng-model="addTicketUnitPrice"  placeholder="请输入门票单价(元)">
+                </div>
+                <div class="form-group" style="width: 80%">
+                    <label >门票描述</label>
+                            <textarea class="form-control" rows="6" cols="20"
+                                      ng-model="addTicketDescription" placeholder="请输入门票描述"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-warning" style="width: 80%">
+            <div class="panel-heading">
+                <h3 class="panel-title">景区负责人</h3>
+            </div>
+            <div class="panel-body">
+                <button class="btn btn-warning" ng-click="chooseUserOnDuty()">选择负责人</button>
+                <div >
+                    <span>已为该景区选择负责人为：&nbsp;</span>
+                    <input data-toggle="tooltip" ng-title="'用户名：'item" class="btn btn-default" readonly ng-model="addScenicUser.username">
+                </div>
+            </div>
+        </div>
+
+
+        <%--<div class="checkbox">
+            <label>
+                <input type="checkbox"> <span ng-click="tradeProtocol()">已阅读用户交易协议</span>
+            </label>
+        </div>--%>
+        <button type="submit" class="btn btn-success" ng-click="addOneScenic()">新增景区</button>
+        <button type="submit" class="btn btn-default" ng-click="as_init()">重置</button>
+        <%--</form>--%>
+    </div>
+
+    <%--新增景区模态框部分--%>
+    <!-- 查看用户列表  模态弹出框 -->
+    <div class="modal fade" id="modalid-chooseUserOnDuty">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <!--  >模态弹出窗标题<  -->
+                    <h4 class="modal-title">用户信息</h4>
+                </div>
+                <div class="modal-body">
+                    <!--  >模态弹出窗主体内容<  -->
+                    <%--用户列表表格--%>
+                    <table class="table table-hover table-striped">
+                        <thead>
+                        <tr><th>用户名</th><th>电话</th><th>邮箱</th><th>状态</th><th>注册时间</th><th>选择</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in userList">
+                            <td ng-bind="item.username"></td>
+                            <td ng-bind="item.tel"></td>
+                            <td ng-bind="item.email"></td>
+                            <td ng-bind="item.isDelete"></td>
+                            <td ng-bind="item.createTime"></td>
+                            <td>
+                                <%--<label style="margin-top: -25px;" class="checkbox-inline"><input type="checkbox" style="cursor:pointer;" ng-click="userCheckBoxs($event,item)"></label>--%>
+                                <button ng-disabled="item.id == 8"
+                                        class="btn btn-success" data-dismiss="modal" ng-click="chooseUserOK(item)">选择</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <%--<button type="button" class="btn btn-success" ng-click="chooseUserOK()" data-dismiss="modal">提交</button>--%>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <!-- 提示信息 模态弹出框-->
+    <div class="modal fade" id="modalid-toastInfo-as">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">提示信息</h4>
+                </div>
+                <div class="modal-body">
+                    <p><span ng-bind="justForModalInfomation"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">确定</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+
+
+
+</div>

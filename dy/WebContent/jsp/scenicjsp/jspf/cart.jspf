@@ -1,0 +1,114 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: zouyao
+  Date: 2017/3/6
+  Time: 11:10
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<script src="jsp/scenicjsp/js/cart.js"></script>
+<%--购物车--%>
+<div class="col-xs-10" style="background-color: #f7f7f7;" id="divid-shopcart" ng-controller="cartcontroller">
+    <caption>
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand">门票预定</a>
+                </div>
+                <div>
+                    <form class="navbar-form navbar-right" role="search"  onsubmit="return ;">
+                        <!--<div class="form-group">
+                            <input type="text" class="form-control" placeholder="请输入用户名" ng-model="searchUserName">
+                        </div>-->
+                        <%--<button type="button" class="btn btn-default" ng-click="actionOnUser(this,constRef[0][3])">
+                            <span class="glyphicon glyphicon-search"></span>&nbsp;<span ng-bind="constRef[0][3]"></span>
+                        </button>--%>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </caption>
+    <div style="height: 600px;overflow-y: scroll;">
+        <table class="table table-hover table-striped table-bordered">
+            <thead>
+            <tr><th>选择</th><th>门票名称</th><th>添加时间</th><th>图片</th><th>门票描述</th><th>单价(元)</th><th>购买数量</th><th>操作</th></tr>
+            </thead>
+            <tbody>
+            <tr ng-if="goodsListOfCart.length <= 0"><td colspan="8">购物车空空如也...</td></tr>
+            <tr ng-repeat="item in goodsListOfCart">
+                <td style="vertical-align:middle"><label style="margin-top: -25px;" class="checkbox-inline"><input type="checkbox" style="cursor:pointer;" ng-click="cartCheckBoxs($event,item)"></label></td>
+                <td style="vertical-align:middle" ng-bind="item.ticket.ticketName"></td>
+                <td style="vertical-align:middle" ng-bind="item.createTime"></td>
+                <td style="vertical-align:middle"><img ng-src="{{item.ticket.picture}}" alt="" width="100px" height="100px"></td>
+                <td style="vertical-align:middle" ng-bind="item.ticket.description"></td>
+                <td style="vertical-align:middle" ng-bind="item.ticket.unitPrice"></td>
+                <td style="vertical-align:middle" ng-bind="item.ticketNums"></td>
+                <td style="vertical-align:middle"><button ng-click="editTicketNums(item)" type="button" class="btn btn-warning btn-sm"><span class="glyphicon glyphicon-shopping-cart"></span>&nbsp;<span>编辑数量</span></button></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="margin-top:20px;margin-bottom: 20px;" ng-show="goodsListOfCart.length > 0">
+        <button class="btn btn-success" ng-click="addOneOrder()">生成订单</button>
+        <button class="btn btn-danger" ng-click="deleteFromCart()">从购物车删除</button>
+    </div>
+    <%--<div><!--分页bar ng-if则不能给button设置disabled因为ng-if不满足条件不会生成相应dom元素-->
+        <span ng-show="userList.length > 0">
+            <input type="button" ng-click="makePagingList(prevPage)" class="btn btn-default btnid-prevpage" value={{prevPage}} />&nbsp;
+            <input type="text" disabled style="text-align:center;width:50px;" ng-model="currentPage" />&nbsp;
+            <input type="button" ng-click="makePagingList(nextPage)"  class="btn btn-default btnid-nextpage" value="{{nextPage}}" />&nbsp;
+            <span>共&nbsp;</span>
+            <input type="text" readonly="readonly" style="text-align:center;width:50px;border:none;" ng-model="totalPage" />
+            <span>&nbsp;页</span>
+        </span>
+    </div>--%>
+
+    <%--购物车模态框部分--%>
+    <!-- 提示信息 模态弹出框-->
+    <div class="modal fade" id="modalid-toastInfo-cart">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">提示信息</h4>
+                </div>
+                <div class="modal-body">
+                    <p><span ng-bind="justForModalInfomation"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">确定</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <!-- 编辑数量  模态弹出框 -->
+    <div class="modal fade" id="modalid-editNums-cart">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <!--  >模态弹出窗标题<  -->
+                    <h4 class="modal-title">购买数量</h4>
+                </div>
+                <div class="modal-body">
+                    <!--  >模态弹出窗主体内容<  -->
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-2 col-sm-offset-2 control-label">购买数量</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" name="email" ng-model="editTicketNumsTemp.ticketNums" >
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" ng-click="editGoodsNumsFunc()" data-dismiss="modal">确定</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+</div>
